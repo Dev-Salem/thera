@@ -15,6 +15,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setPathUrlStrategy();
   final prefs = await SharedPreferences.getInstance();
+  // await prefs.clear();
   await Supabase.initialize(url: Env.projectUrl, anonKey: Env.anonKey);
   runApp(ProviderScope(
     overrides: [sharedPreferencesProvider.overrideWith((ref) => prefs)],
