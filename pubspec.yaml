@@ -35,6 +35,9 @@ dependencies:
   flutter_onboarding_slider: ^1.0.11
   google_fonts: ^6.2.1
   pie_chart: ^5.4.0
+  carousel_slider: ^5.0.0
+  percent_indicator: ^4.2.4
+  syncfusion_flutter_pdfviewer: ^27.2.4
 
 dev_dependencies:
   flutter_test:
