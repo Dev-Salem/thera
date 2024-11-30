@@ -3,12 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:thera/src/app.dart';
 import 'package:thera/src/core/app_theme.dart';
 import 'package:thera/src/core/env/env.dart';
 import 'package:thera/src/core/router/go_route.dart';
-import 'package:thera/src/features/auth/presentation/screens/sign_in_screen.dart';
-import 'package:thera/src/features/onboarding/screens/onboarding_screens.dart';
 import 'package:thera/src/features/user/data/user_repository.dart';
 
 Future<void> main() async {
