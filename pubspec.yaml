@@ -44,6 +44,7 @@ dependencies:
   flutter_svg: ^2.0.16
   bubble: ^1.2.1
   websafe_svg: ^3.0.1+7
+  pdfx: ^2.8.0
 
 dev_dependencies:
   flutter_test:
