@@ -23,7 +23,7 @@ class SignInScreen extends StatelessWidget {
           Consumer(
             builder: (_, WidgetRef ref, __) {
               return SupaEmailAuth(
-                redirectTo: kIsWeb ? null : 'io.mydomain.myapp://callback',
+                // redirectTo: kIsWeb ? null : 'io.mydomain.myapp://callback',
                 onSignInComplete: (response) async {
                   ref.read(goRouterProvider).go("home");
                   ToastService.showSuccessToast(

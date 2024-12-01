@@ -17,7 +17,7 @@ class HomeRepository {
 
   Future<Message> getWritingPrompt() async {
     const prompt =
-        "Generate an interesting writing prompt in Arabic for someone who wants to practice writing, the prompt should consist of at least 4 sub questions";
+        "Generate an interesting writing prompt in Arabic for someone who wants to practice writing, the prompt should consist of at least 4 sub questions, use only Arabic in your response, don't use markdown for formatting, just plain text";
     final response = await client.chatComplete(
         request: const ChatCompletionRequest(
       model: "mistral-small-latest",
@@ -32,7 +32,7 @@ class HomeRepository {
 
   Future<Message> getWritingFeedback(String userWriting) async {
     final prompt =
-        "You will be provided with text in Arabic from someone who wants to practice writing in Arabic, provide feedback on the spelling, grammar and general structure of the text\n$userWriting:";
+        "You will be provided with text in Arabic from someone who wants to practice writing in Arabic, provide feedback on the spelling, grammar and general structure of the text, use only arabic in the feedback, dont's use markdown for formatting, just plain text\n$userWriting:";
     final response = await client.chatComplete(
         request: ChatCompletionRequest(
       model: "mistral-small-latest",

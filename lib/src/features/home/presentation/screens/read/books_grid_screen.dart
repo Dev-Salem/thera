@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:thera/src/core/router/go_route.dart';
 import 'package:thera/src/features/home/presentation/controllers/book_controller.dart';
 import 'package:thera/src/features/home/presentation/screens/home_screen.dart';
+import 'package:websafe_svg/websafe_svg.dart';
 
 class FiltersBottomSheet extends StatelessWidget {
   final String selectedGenre;
@@ -105,7 +106,7 @@ class _BookGridScreenState extends ConsumerState<BookGridScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
-            onPressed: () {
+            onPressed: () async {
               showModalBottomSheet(
                 context: context,
                 builder: (context) => FiltersBottomSheet(
@@ -125,55 +126,59 @@ class _BookGridScreenState extends ConsumerState<BookGridScreen> {
         ],
       ),
       body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: booksNotifier.when(
-              data: (books) {
-                return GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 0.7,
-                  ),
-                  itemCount: books.length,
-                  itemBuilder: (context, index) {
-                    final book = books[index];
-                    return GestureDetector(
-                      onTap: () {
-                        ref
-                            .read(goRouterProvider)
-                            .pushNamed("book", extra: book);
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: SvgPicture.network(
-                                  book.coverLink,
-                                  fit: BoxFit.fill,
-                                )),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            book.name,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(book.category),
-                        ],
-                      ),
-                    );
+        padding: const EdgeInsets.all(16.0),
+        child: booksNotifier.when(
+          data: (books) {
+            return GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.7,
+              ),
+              itemCount: books.length,
+              itemBuilder: (context, index) {
+                final book = books[index];
+                return GestureDetector(
+                  onTap: () {
+                    ref
+                        .read(goRouterProvider)
+                        .pushNamed("read", pathParameters: {"bookId": book.id});
                   },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: WebsafeSvg.network(
+                              book.coverLink,
+                              fit: BoxFit.fill,
+                              height: 120,
+                              placeholderBuilder: (context) =>
+                                  const CircularProgressIndicator.adaptive(),
+                            )),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        book.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(book.category),
+                    ],
+                  ),
                 );
               },
-              error: (e, s) {
-                print(e);
-                print(s);
-                return const Text("Something went wrong").toCenter();
-              },
-              loading: () =>
-                  const CircularProgressIndicator.adaptive().toCenter())),
+            );
+          },
+          error: (e, s) {
+            print(e);
+            print(s);
+            return const Text("Something went wrong").toCenter();
+          },
+          loading: () => const CircularProgressIndicator.adaptive().toCenter(),
+        ),
+      ),
     );
   }
 }

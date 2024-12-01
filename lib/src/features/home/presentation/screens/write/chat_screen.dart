@@ -8,40 +8,47 @@ class ChatMessagesWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final messages = ref.watch(chatControllerProvider);
-    return messages.when(
-        data: (messages) {
-          return ListView.builder(
-            reverse: false, // New messages appear at the bottom
-            itemCount: messages.length,
-            itemBuilder: (context, index) {
-              final message = messages[index];
-              return Align(
-                alignment: message.isUserGenerated
-                    ? Alignment.centerRight
-                    : Alignment.centerLeft,
-                child: Container(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: message.isUserGenerated
-                        ? Colors.grey[300]
-                        : Colors.grey[400],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(message.content),
-                ),
-              );
-            },
+    final chatState = ref.watch(chatControllerProvider);
+
+    return chatState.when(
+      data: (messages) => ListView.builder(
+        reverse: true, // New messages appear at the bottom
+        itemCount: messages.length,
+        itemBuilder: (context, index) {
+          final message = messages[messages.length - 1 - index];
+          return Align(
+            alignment: message.isUserGenerated
+                ? Alignment.centerRight
+                : Alignment.centerLeft,
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: message.isUserGenerated
+                    ? Colors.green[100]
+                    : Colors.blue[100],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                message.content,
+                textDirection: TextDirection.rtl,
+              ),
+            ),
           );
         },
-        error: (e, s) => Scaffold(
-              body: const Text("something went wrong").toCenter(),
-            ),
-        loading: () => Scaffold(
-              body: const CircularProgressIndicator.adaptive().toCenter(),
-            ));
+      ),
+      loading: () => const Column(
+        children: [
+          Expanded(
+            child: Center(child: CircularProgressIndicator()),
+          ),
+          Text("AI is typing..."),
+        ],
+      ),
+      error: (e, s) => Center(
+        child: Text("Something went wrong: $e"),
+      ),
+    );
   }
 }
 
@@ -100,6 +107,7 @@ class ChatScreen extends StatelessWidget {
       ),
       body: const Column(
         children: [
+          
           Expanded(
             child: ChatMessagesWidget(),
           ),

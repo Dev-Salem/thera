@@ -26,11 +26,10 @@ class ExtraContentCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(
-              imageUrl,
+            Container(
               height: 120,
-              fit: BoxFit.cover,
-              width: double.infinity,
+              alignment: Alignment.center,
+              child: const Icon(Icons.image),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
