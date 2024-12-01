@@ -45,6 +45,7 @@ dependencies:
   bubble: ^1.2.1
   websafe_svg: ^3.0.1+7
   pdfx: ^2.8.0
+  flutter_native_splash: ^2.4.3
 
 dev_dependencies:
   flutter_test:
@@ -78,3 +79,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_native_splash:
+  color: "#f5fbea"
+  image: "assets/logo.png"

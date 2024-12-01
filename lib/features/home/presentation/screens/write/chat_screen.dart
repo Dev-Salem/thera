@@ -1,4 +1,5 @@
 import 'package:awesome_extensions/awesome_extensions.dart';
+import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thera/features/home/presentation/controllers/chat_controller.dart';
@@ -17,24 +18,21 @@ class ChatMessagesWidget extends ConsumerWidget {
         itemBuilder: (context, index) {
           final message = messages[messages.length - 1 - index];
           return Align(
-            alignment: message.isUserGenerated
-                ? Alignment.centerRight
-                : Alignment.centerLeft,
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
+              alignment: message.isUserGenerated
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
+              child: Bubble(
+                showNip: true,
+                margin: const BubbleEdges.all(8),
+                padding: const BubbleEdges.all(4),
                 color: message.isUserGenerated
-                    ? Colors.green[100]
-                    : Colors.blue[100],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                message.content,
-                textDirection: TextDirection.rtl,
-              ),
-            ),
-          );
+                    ? Colors.blueGrey[200]
+                    : Colors.grey[400],
+                child: Text(
+                  message.content,
+                  textDirection: TextDirection.rtl,
+                ),
+              ));
         },
       ),
       loading: () => const Column(
@@ -107,7 +105,6 @@ class ChatScreen extends StatelessWidget {
       ),
       body: const Column(
         children: [
-          
           Expanded(
             child: ChatMessagesWidget(),
           ),
