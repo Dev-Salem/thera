@@ -1,112 +1,111 @@
-// import 'package:awesome_extensions/awesome_extensions.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:thera/src/features/auth/data/auth_repository.dart';
-// import 'package:thera/src/features/home/domain/message.dart';
-// import 'package:thera/src/features/home/presentation/screens/write/chat_bubble_widget.dart';
+import 'package:awesome_extensions/awesome_extensions.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:thera/src/features/home/presentation/controllers/chat_controller.dart';
 
-// class ChatDetailsScreen extends ConsumerWidget {
-//   const ChatDetailsScreen({
-//     required this.requestId,
-//     required this.senderId,
-//     required this.receiverId,
-//     super.key,
-//   });
-//   final String requestId;
-//   final String senderId;
-//   final String receiverId;
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     // final messagesProvider = ref.watch(getChatMessagesProvider.call(requestId));
-//     final currentUserId =
-//         ref.watch(supabaseClientProvider).auth.currentUser!.id;
-//     final otherUserId = currentUserId == senderId ? receiverId : senderId;
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text("Write"),
-//       ),
-//       body: messagesProvider.when(
-//         data: (messages) {
-//           return Column(
-//             children: [
-//               Expanded(
-//                 child: ListView.builder(
-//                   shrinkWrap: true,
-//                   reverse: true,
-//                   padding: const EdgeInsets.symmetric(
-//                     horizontal: 16,
-//                   ),
-//                   itemCount: messages.length,
-//                   itemBuilder: (context, index) {
-//                     return Padding(
-//                       padding: const EdgeInsets.only(bottom: 5),
-//                       child: ChatBubbleWidget(
-//                         message: messages[index],
-//                         currentUserId: currentUserId,
-//                       ),
-//                     );
-//                   },
-//                 ),
-//               ),
-//               Align(
-//                 alignment: Alignment.bottomCenter,
-//                 child: TextFormField(
-//                   decoration: InputDecoration(
-//                       suffix: IconButton(
-//                           onPressed: () {
-                            
-//                           }, icon: const Icon(Icons.send))),
-//                   validator: (p0) {
-//                     if (p0 == null) {
-//                       return null;
-//                     }
-//                     if (p0.isEmpty) {
-//                       return "Too short";
-//                     }
-//                     if (p0.length > 255) {
-//                       return "Too Long";
-//                     }
-//                     return null;
-//                   },
-//                 ),
-//               ),
-//             ],
-//           );
-//         },
-//         error: (e, s) => ErrorResultWidget(
-//           onRefresh: () =>
-//               ref.refresh(getChatMessagesProvider.call(requestId).future),
-//         ),
-//         loading: () {
-//           return const _LoadingChatWidget();
-//         },
-//       ),
-//     );
-//   }
-// }
+class ChatMessagesWidget extends ConsumerWidget {
+  const ChatMessagesWidget({super.key});
 
-// class _LoadingChatWidget extends StatelessWidget {
-//   const _LoadingChatWidget();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final messages = ref.watch(chatControllerProvider);
+    return messages.when(
+        data: (messages) {
+          return ListView.builder(
+            reverse: false, // New messages appear at the bottom
+            itemCount: messages.length,
+            itemBuilder: (context, index) {
+              final message = messages[index];
+              return Align(
+                alignment: message.isUserGenerated
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft,
+                child: Container(
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: message.isUserGenerated
+                        ? Colors.grey[300]
+                        : Colors.grey[400],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(message.content),
+                ),
+              );
+            },
+          );
+        },
+        error: (e, s) => Scaffold(
+              body: const Text("something went wrong").toCenter(),
+            ),
+        loading: () => Scaffold(
+              body: const CircularProgressIndicator.adaptive().toCenter(),
+            ));
+  }
+}
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return ListView(
-//       padding: const EdgeInsets.symmetric(
-//         horizontal: 16,
-//       ),
-//       children: List.generate(10, (index) {
-//         final message = Message(
-//           id: 'id',
-//           content: 'index' * 2,
-//         );
-//         return ChatBubbleWidget(
-//           currentUserId: '$index',
-//           message: message,
-//         ).applyShimmer(
-//           highlightColor: index.isEven ? Colors.black12 : Colors.grey[200],
-//           baseColor: index.isEven ? Colors.black38 : Colors.grey,
-//         );
-//       }),
-//     );
-//   }
-// }
+class ChatInputWidget extends ConsumerStatefulWidget {
+  const ChatInputWidget({super.key});
+
+  @override
+  ConsumerState<ChatInputWidget> createState() => _ChatInputWidgetState();
+}
+
+class _ChatInputWidgetState extends ConsumerState<ChatInputWidget> {
+  final TextEditingController _controller = TextEditingController();
+
+  void _sendMessage() {
+    final content = _controller.text.trim();
+    if (content.isNotEmpty) {
+      ref.read(chatControllerProvider.notifier).addUserMessage(content);
+      _controller.clear();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _controller,
+              decoration: const InputDecoration(
+                hintText: "Type a message...",
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            icon: const Icon(Icons.send),
+            onPressed: _sendMessage,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ChatScreen extends StatelessWidget {
+  const ChatScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("AI Chat"),
+      ),
+      body: const Column(
+        children: [
+          Expanded(
+            child: ChatMessagesWidget(),
+          ),
+          ChatInputWidget(),
+        ],
+      ),
+    );
+  }
+}

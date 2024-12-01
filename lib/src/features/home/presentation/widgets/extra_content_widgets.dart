@@ -19,7 +19,6 @@ class ExtraContentCard extends ConsumerWidget {
     return GestureDetector(
       onTap: () async {
         final home = ref.read(homeRepositoryProvider);
-        final response = await home.getWritingPrompot();
       },
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 8),

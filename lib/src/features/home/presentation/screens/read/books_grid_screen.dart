@@ -1,6 +1,7 @@
 import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:thera/src/core/router/go_route.dart';
 import 'package:thera/src/features/home/presentation/controllers/book_controller.dart';
 import 'package:thera/src/features/home/presentation/screens/home_screen.dart';
@@ -97,7 +98,7 @@ class _BookGridScreenState extends ConsumerState<BookGridScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final booksNotifier = ref.watch(booksControllerProvider);
+    final booksNotifier = ref.watch(BooksProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Books"),
@@ -127,7 +128,7 @@ class _BookGridScreenState extends ConsumerState<BookGridScreen> {
           padding: const EdgeInsets.all(16.0),
           child: booksNotifier.when(
               data: (books) {
-                GridView.builder(
+                return GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     mainAxisSpacing: 16,
@@ -148,10 +149,11 @@ class _BookGridScreenState extends ConsumerState<BookGridScreen> {
                         children: [
                           Expanded(
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(book.coverLink,
-                                  fit: BoxFit.cover),
-                            ),
+                                borderRadius: BorderRadius.circular(8),
+                                child: SvgPicture.network(
+                                  book.coverLink,
+                                  fit: BoxFit.fill,
+                                )),
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -164,7 +166,6 @@ class _BookGridScreenState extends ConsumerState<BookGridScreen> {
                     );
                   },
                 );
-                return null;
               },
               error: (e, s) {
                 print(e);

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:timer_count_down/timer_controller.dart';
 import 'package:timer_count_down/timer_count_down.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 class PdfReaderScreen extends StatefulWidget {
   final String pdfUrl; // URL or file path of the PDF
@@ -14,35 +13,48 @@ class PdfReaderScreen extends StatefulWidget {
 
 class _PdfReaderScreenState extends State<PdfReaderScreen> {
   final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
+  late final CountdownController _countController;
+
+  @override
+  void initState() {
+    _countController = CountdownController(autoStart: true);
+    super.initState();
+  }
+
   bool isTimerRunning = true;
 
   @override
   void dispose() {
     super.dispose();
+    _countController.pause();
     isTimerRunning = false; // Stops the timer when user leaves the screen
   }
 
   Future<Map<String, dynamic>> fetchWordDefinition(String word) async {
-    const url = 'https://libretranslate.com/translate';
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(
-          {'q': word, 'source': 'ar', 'target': 'en', 'format': 'text'}),
-    );
+    // const url = 'https://libretranslate.com/translate';
+    // final response = await http.post(
+    //   Uri.parse(url),
+    //   headers: {'Content-Type': 'application/json'},
+    //   body: jsonEncode(
+    //       {'q': word, 'source': 'ar', 'target': 'en', 'format': 'text'}),
+    // );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return {
-        'word': word,
-        'translation': data['translatedText'],
-      };
-    } else {
-      return {
-        'word': word,
-        'translation': 'Translation not found.',
-      };
-    }
+    // if (response.statusCode == 200) {
+    //   final data = jsonDecode(response.body);
+    //   return {
+    //     'word': word,
+    //     'translation': data['translatedText'],
+    //   };
+    // } else {
+    //   return {
+    //     'word': word,
+    //     'translation': 'Translation not found.',
+    //   };
+    // }
+    return {
+      'word': word,
+      'translation': "معنى",
+    };
   }
 
   void showWordDefinition(String word) async {
@@ -104,7 +116,12 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
           IconButton(
             icon: const Icon(Icons.timer),
             onPressed: () {
-              // Optionally reset timer or show timer info
+              isTimerRunning = !isTimerRunning;
+              if (isTimerRunning) {
+                _countController.pause();
+              } else {
+                _countController.resume();
+              }
             },
           ),
         ],
@@ -132,6 +149,7 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
                     "${(time / 60).floor()}:${(time % 60).toString().padLeft(2, '0')}"),
                 icon: const Icon(Icons.timer),
               ),
+              controller: _countController,
               onFinished: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text("Time's up!")),

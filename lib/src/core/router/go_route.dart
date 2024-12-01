@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:thera/src/core/router/refresh_stream.dart';
 import 'package:thera/src/features/auth/data/auth_repository.dart';
 import 'package:thera/src/features/auth/presentation/screens/sign_in_screen.dart';
+import 'package:thera/src/features/home/domain/book.dart';
 import 'package:thera/src/features/home/presentation/screens/home_screen.dart';
 import 'package:thera/src/features/home/presentation/screens/read/book_overview_screen.dart';
 import 'package:thera/src/features/home/presentation/screens/read/book_reader.dart';
 import 'package:thera/src/features/home/presentation/screens/read/books_grid_screen.dart';
+import 'package:thera/src/features/home/presentation/screens/write/chat_screen.dart';
 import 'package:thera/src/features/onboarding/screens/onboarding_screens.dart';
 import 'package:thera/src/features/user/data/user_repository.dart';
 part 'go_route.g.dart';
@@ -62,13 +64,17 @@ GoRouter goRouter(Ref ref) {
           path: "/book",
           name: "book",
           builder: (context, state) => BookOverviewScreen(
-            book: state.extra as Map<String, String>,
+            book: state.extra as Book,
           ),
         ),
         GoRoute(
             path: "/read-book",
             name: "read-book",
-            builder: (context, state) => const PdfReaderScreen(
-                pdfUrl: "https://downloads.hindawi.org/books/31919627.pdf"))
+            builder: (context, state) =>
+                PdfReaderScreen(pdfUrl: state.extra as String)),
+        GoRoute(
+            path: "/write",
+            name: "write",
+            builder: (context, state) => const ChatScreen())
       ]);
 }

@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:thera/src/core/env/env.dart';
 import 'package:thera/src/features/home/domain/message.dart';
+import 'package:uuid/uuid.dart';
 part 'home_repository.g.dart';
 
 class HomeRepository {
@@ -13,16 +14,35 @@ class HomeRepository {
   HomeRepository({
     required this.client,
   });
-  Future<Message> getWritingPrompot() async {
+
+  Future<Message> getWritingPrompt() async {
     const prompt =
-        "Generate a detailed prompt in Arabic (in the form of a question, the question should have at least 5 sub questions) to make an Arabic learner practice writing, no explanation, just the prompt in Arabic.";
+        "Generate an interesting writing prompt in Arabic for someone who wants to practice writing, the prompt should consist of at least 4 sub questions";
     final response = await client.chatComplete(
         request: const ChatCompletionRequest(
       model: "mistral-small-latest",
-      messages: [prompt],
+      messages: [UserMessage(content: UserMessageContent.string(prompt))],
     ));
-    print(response);
-    return const Message(id: "id", content: "content", isUserGenerated: false);
+
+    return Message(
+        id: const Uuid().v4(),
+        content: response.choices!.first.message.content!,
+        isUserGenerated: false);
+  }
+
+  Future<Message> getWritingFeedback(String userWriting) async {
+    final prompt =
+        "You will be provided with text in Arabic from someone who wants to practice writing in Arabic, provide feedback on the spelling, grammar and general structure of the text\n$userWriting:";
+    final response = await client.chatComplete(
+        request: ChatCompletionRequest(
+      model: "mistral-small-latest",
+      messages: [UserMessage(content: UserMessageContent.string(prompt))],
+    ));
+
+    return Message(
+        id: const Uuid().v4(),
+        content: response.choices!.first.message.content!,
+        isUserGenerated: false);
   }
 }
 

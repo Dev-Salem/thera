@@ -49,10 +49,16 @@ class TaskListView extends StatelessWidget {
           builder: (_, WidgetRef ref, __) {
             return InkWell(
               onTap: () {
-                ref
-                    .read(goRouterProvider)
-                    .pushNamed(tasks[index].label.toLowerCase());
-                ref.read(booksControllerProvider.notifier).getBooks();
+                if (index == 1) {
+                  ref
+                      .read(goRouterProvider)
+                      .pushNamed(tasks[index].label.toLowerCase());
+                }
+                if (index == 2) {
+                  ref
+                      .read(goRouterProvider)
+                      .pushNamed(tasks[index].label.toLowerCase());
+                }
               },
               child: Container(
                 width: 8 * 20,
