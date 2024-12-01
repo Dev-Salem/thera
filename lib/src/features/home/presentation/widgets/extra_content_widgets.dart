@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:thera/src/features/home/data/home_repository.dart';
 
-class ExtraContentCard extends StatelessWidget {
+class ExtraContentCard extends ConsumerWidget {
   final String imageUrl;
   final String title;
   final String level;
@@ -13,31 +15,36 @@ class ExtraContentCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      clipBehavior: Clip.hardEdge,
-   
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Image.network(
-            imageUrl,
-            height: 120,
-            fit: BoxFit.cover,
-            width: double.infinity,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontSize: 16)),
-                Text(level, style: const TextStyle(color: Colors.grey)),
-              ],
+  Widget build(BuildContext context, ref) {
+    return GestureDetector(
+      onTap: () async {
+        final home = ref.read(homeRepositoryProvider);
+        final response = await home.getWritingPrompot();
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        clipBehavior: Clip.hardEdge,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(
+              imageUrl,
+              height: 120,
+              fit: BoxFit.cover,
+              width: double.infinity,
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontSize: 16)),
+                  Text(level, style: const TextStyle(color: Colors.grey)),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

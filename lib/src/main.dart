@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:thera/src/core/app_theme.dart';
 import 'package:thera/src/core/env/env.dart';
 import 'package:thera/src/core/router/go_route.dart';
+import 'package:thera/src/features/home/data/home_repository.dart';
 import 'package:thera/src/features/user/data/user_repository.dart';
 
 Future<void> main() async {
@@ -34,3 +35,4 @@ class App extends ConsumerWidget {
     );
   }
 }
+//H7NfVGbuQBPwFnOgvJjNvx07D0e3q3sw

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-// import 'package:timer_count_down/timer_count_down.dart';
+import 'package:timer_count_down/timer_count_down.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -23,34 +23,24 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
   }
 
   Future<Map<String, dynamic>> fetchWordDefinition(String word) async {
-    try {
-      final response = await http.get(
-        Uri.parse("https://api.dictionaryapi.dev/api/v2/entries/en/$word"),
-      );
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body)[0];
-      } else {
-        return {
-          "word": word,
-          "meanings": [
-            {
-              "definitions": [
-                {"definition": "Definition not found."}
-              ]
-            }
-          ],
-        };
-      }
-    } catch (e) {
+    const url = 'https://libretranslate.com/translate';
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(
+          {'q': word, 'source': 'ar', 'target': 'en', 'format': 'text'}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
       return {
-        "word": word,
-        "meanings": [
-          {
-            "definitions": [
-              {"definition": "An error occurred."}
-            ]
-          }
-        ],
+        'word': word,
+        'translation': data['translatedText'],
+      };
+    } else {
+      return {
+        'word': word,
+        'translation': 'Translation not found.',
       };
     }
   }
@@ -131,24 +121,24 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
               }
             },
           ),
-          // Positioned(
-          //   bottom: 20,
-          //   right: 20,
-          //   child: Countdown(
-          //     seconds: 20 * 60, // 20 minutes
-          //     build: (context, time) => FloatingActionButton.extended(
-          //       onPressed: null,
-          //       label: Text(
-          //           "${(time / 60).floor()}:${(time % 60).toString().padLeft(2, '0')}"),
-          //       icon: const Icon(Icons.timer),
-          //     ),
-          //     onFinished: () {
-          //       ScaffoldMessenger.of(context).showSnackBar(
-          //         const SnackBar(content: Text("Time's up!")),
-          //       );
-          //     },
-          //   ),
-          // ),
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: Countdown(
+              seconds: 20 * 60, // 20 minutes
+              build: (context, time) => FloatingActionButton.extended(
+                onPressed: null,
+                label: Text(
+                    "${(time / 60).floor()}:${(time % 60).toString().padLeft(2, '0')}"),
+                icon: const Icon(Icons.timer),
+              ),
+              onFinished: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Time's up!")),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );

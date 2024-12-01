@@ -9,4 +9,7 @@ abstract class Env {
 
   @EnviedField(varName: 'ANON_KEY', obfuscate: true)
   static final String anonKey = _Env.anonKey;
+
+  @EnviedField(varName: 'Mistral_API', obfuscate: true)
+  static final String mistralApi = _Env.mistralApi;
 }

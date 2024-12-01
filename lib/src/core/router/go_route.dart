@@ -6,6 +6,7 @@ import 'package:thera/src/features/auth/data/auth_repository.dart';
 import 'package:thera/src/features/auth/presentation/screens/sign_in_screen.dart';
 import 'package:thera/src/features/home/presentation/screens/home_screen.dart';
 import 'package:thera/src/features/home/presentation/screens/read/book_overview_screen.dart';
+import 'package:thera/src/features/home/presentation/screens/read/book_reader.dart';
 import 'package:thera/src/features/home/presentation/screens/read/books_grid_screen.dart';
 import 'package:thera/src/features/onboarding/screens/onboarding_screens.dart';
 import 'package:thera/src/features/user/data/user_repository.dart';
@@ -20,13 +21,19 @@ GoRouter goRouter(Ref ref) {
       refreshListenable:
           GoRouterRefreshStream(authRepository.authStateChanges()),
       redirect: (context, state) async {
+        final path = state.uri.path;
         final currentSession = authRepository.currentSession;
+        print(
+            "is First sign in${userRepository.isFirstSignIn}\nCurrent session: ${currentSession?.user}");
         if (currentSession == null) {
           final isFirstSignIn = userRepository.isFirstSignIn;
           if (isFirstSignIn) {
             return "/onboarding";
+          } else {
+            if (path.startsWith('/signIn')) {
+              return "/home";
+            }
           }
-          return "/signIn";
         }
         return null;
       },
@@ -58,5 +65,10 @@ GoRouter goRouter(Ref ref) {
             book: state.extra as Map<String, String>,
           ),
         ),
+        GoRoute(
+            path: "/read-book",
+            name: "read-book",
+            builder: (context, state) => const PdfReaderScreen(
+                pdfUrl: "https://downloads.hindawi.org/books/31919627.pdf"))
       ]);
 }

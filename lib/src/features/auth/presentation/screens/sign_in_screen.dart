@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 import 'package:thera/src/core/router/go_route.dart';
+import 'package:thera/src/features/user/data/user_repository.dart';
 import 'package:toasty_box/toast_enums.dart';
 import 'package:toasty_box/toast_service.dart';
 
@@ -23,7 +24,8 @@ class SignInScreen extends StatelessWidget {
             builder: (_, WidgetRef ref, __) {
               return SupaEmailAuth(
                 redirectTo: kIsWeb ? null : 'io.mydomain.myapp://callback',
-                onSignInComplete: (response) {
+                onSignInComplete: (response) async {
+                  ref.read(goRouterProvider).go("home");
                   ToastService.showSuccessToast(
                     context,
                     length: ToastLength.medium,
@@ -31,7 +33,10 @@ class SignInScreen extends StatelessWidget {
                     message: "Sign in successfully",
                   );
                 },
-                onSignUpComplete: (response) {
+                onSignUpComplete: (response) async {
+                  ref.read(goRouterProvider).go("home");
+                  // ref.refresh(goRouterProvider);
+                  // ref.read(goRouterProvider).go("home");
                   ToastService.showSuccessToast(
                     context,
                     length: ToastLength.long,

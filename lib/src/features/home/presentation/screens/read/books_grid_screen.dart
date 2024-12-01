@@ -1,126 +1,9 @@
+import 'package:awesome_extensions/awesome_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thera/src/core/router/go_route.dart';
-
-class BookGridScreen extends StatefulWidget {
-  const BookGridScreen({super.key});
-
-  @override
-  _BookGridScreenState createState() => _BookGridScreenState();
-}
-
-class _BookGridScreenState extends State<BookGridScreen> {
-  String selectedGenre = "All";
-  String selectedLevel = "All";
-
-  final List<Map<String, String>> books = [
-    {
-      "title": "Book 1",
-      "genre": "Fiction",
-      "level": "Beginner",
-      "cover": "https://via.placeholder.com/150",
-    },
-    {
-      "title": "Book 2",
-      "genre": "Science",
-      "level": "Intermediate",
-      "cover": "https://via.placeholder.com/150",
-    },
-    {
-      "title": "Book 3",
-      "genre": "History",
-      "level": "Advanced",
-      "cover": "https://via.placeholder.com/150",
-    },
-    {
-      "title": "Book 4",
-      "genre": "Fiction",
-      "level": "Beginner",
-      "cover": "https://via.placeholder.com/150",
-    },
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    // Filter books based on genre and level
-    List<Map<String, String>> filteredBooks = books.where((book) {
-      bool matchesGenre =
-          selectedGenre == "All" || book["genre"] == selectedGenre;
-      bool matchesLevel =
-          selectedLevel == "All" || book["level"] == selectedLevel;
-      return matchesGenre && matchesLevel;
-    }).toList();
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Books"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) => FiltersBottomSheet(
-                  selectedGenre: selectedGenre,
-                  selectedLevel: selectedLevel,
-                  onApplyFilters: (genre, level) {
-                    setState(() {
-                      selectedGenre = genre;
-                      selectedLevel = level;
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-            childAspectRatio: 0.7,
-          ),
-          itemCount: filteredBooks.length,
-          itemBuilder: (context, index) {
-            final book = filteredBooks[index];
-            return Consumer(
-              builder: (_, WidgetRef ref, __) {
-                return GestureDetector(
-                  onTap: () {
-                    ref.read(goRouterProvider).pushNamed("book", extra: book);
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child:
-                              Image.network(book["cover"]!, fit: BoxFit.cover),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        book["title"]!,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(book["genre"]!),
-                    ],
-                  ),
-                );
-              },
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
+import 'package:thera/src/features/home/presentation/controllers/book_controller.dart';
+import 'package:thera/src/features/home/presentation/screens/home_screen.dart';
 
 class FiltersBottomSheet extends StatelessWidget {
   final String selectedGenre;
@@ -192,6 +75,104 @@ class FiltersBottomSheet extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class BookGridScreen extends ConsumerStatefulWidget {
+  const BookGridScreen({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _BookGridScreenState();
+}
+
+class _BookGridScreenState extends ConsumerState<BookGridScreen> {
+  String selectedGenre = "All";
+  String selectedLevel = "All";
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final booksNotifier = ref.watch(booksControllerProvider);
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Books"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => FiltersBottomSheet(
+                  selectedGenre: selectedGenre,
+                  selectedLevel: selectedLevel,
+                  onApplyFilters: (genre, level) {
+                    setState(() {
+                      selectedGenre = genre;
+                      selectedLevel = level;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+      body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: booksNotifier.when(
+              data: (books) {
+                GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 0.7,
+                  ),
+                  itemCount: books.length,
+                  itemBuilder: (context, index) {
+                    final book = books[index];
+                    return GestureDetector(
+                      onTap: () {
+                        ref
+                            .read(goRouterProvider)
+                            .pushNamed("book", extra: book);
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(book.coverLink,
+                                  fit: BoxFit.cover),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            book.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(book.category),
+                        ],
+                      ),
+                    );
+                  },
+                );
+                return null;
+              },
+              error: (e, s) {
+                print(e);
+                print(s);
+                return const Text("Something went wrong").toCenter();
+              },
+              loading: () =>
+                  const CircularProgressIndicator.adaptive().toCenter())),
     );
   }
 }

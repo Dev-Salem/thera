@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thera/src/core/router/go_route.dart';
+import 'package:thera/src/features/home/presentation/controllers/book_controller.dart';
 
 class TaskCard extends StatelessWidget {
   final IconData icon;
@@ -51,6 +52,7 @@ class TaskListView extends StatelessWidget {
                 ref
                     .read(goRouterProvider)
                     .pushNamed(tasks[index].label.toLowerCase());
+                ref.read(booksControllerProvider.notifier).getBooks();
               },
               child: Container(
                 width: 8 * 20,

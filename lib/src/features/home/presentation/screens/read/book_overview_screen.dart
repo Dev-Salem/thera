@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:thera/src/core/router/go_route.dart';
 
 class BookOverviewScreen extends StatelessWidget {
   final Map<String, String> book;
@@ -51,11 +53,15 @@ class BookOverviewScreen extends StatelessWidget {
             ),
             const Spacer(),
             Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Add read action here
+              child: Consumer(
+                builder: (_, WidgetRef ref, __) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      ref.read(goRouterProvider).pushNamed("read-book");
+                    },
+                    child: const Text("Read"),
+                  );
                 },
-                child: const Text("Read"),
               ),
             ),
           ],
