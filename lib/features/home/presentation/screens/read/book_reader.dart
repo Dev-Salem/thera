@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -130,16 +131,18 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
       ),
       body: Stack(
         children: [
-          SfPdfViewer.asset(
-            "assets/algo.pdf",
-            key: _pdfViewerKey,
-            onTextSelectionChanged: (details) {
-              if (details.selectedText != null &&
-                  details.selectedText!.trim().isNotEmpty) {
-                showWordDefinition(details.selectedText!.trim());
-              }
-            },
-          ),
+          kIsWeb
+              ? SfPdfViewer.asset(
+                  "assets/algo.pdf",
+                  key: _pdfViewerKey,
+                  onTextSelectionChanged: (details) {
+                    if (details.selectedText != null &&
+                        details.selectedText!.trim().isNotEmpty) {
+                      showWordDefinition(details.selectedText!.trim());
+                    }
+                  },
+                )
+              : SfPdfViewer.network(widget.pdfUrl),
           Positioned(
             bottom: 20,
             right: 20,

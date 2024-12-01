@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:thera/core/app_theme.dart';
 import 'package:thera/core/env/env.dart';
-import 'package:thera/core/router/go_route.dart';
 import 'package:thera/features/auth/data/auth_repository.dart';
 import 'package:thera/features/auth/presentation/screens/sign_in_screen.dart';
 import 'package:thera/features/home/presentation/screens/home_screen.dart';
@@ -42,7 +41,7 @@ class App extends ConsumerWidget {
         '/home': (context) => const HomeScreen(),
         '/signIn': (context) => const SignInScreen(),
         '/onboarding': (context) => const OnboardingScreens(),
-        "/books":(context) => const BookGridScreen(),
+        "/books": (context) => const BookGridScreen(),
         '/book': (context) => const BookOverviewScreen(bookId: ""),
         '/write': (context) => const ChatScreen(),
       },
